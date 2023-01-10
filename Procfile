@@ -1,0 +1,1 @@
+web: gunicorn 'errandz_backend.wsgi'
