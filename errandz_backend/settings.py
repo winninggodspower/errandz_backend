@@ -17,6 +17,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/', 'http://localhost:8000/']
 
 AUTH_USER_MODEL = 'user_auth.Account'
 
