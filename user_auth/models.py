@@ -43,6 +43,40 @@ ACCOUNT_CHOICES = (
     ('vendor', 'Vendor'),
     ('customer', 'Customer'),
 )
+    
+
+class Rider(models.Model):
+    first_name          = models.CharField(max_length=30)
+    last_name           = models.CharField(max_length=30)
+    account             = models.OneToOneField('Account', on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
+class Vendor(models.Model):
+    company_name        = models.CharField( max_length=50, unique=True)
+    company_address     = models.CharField( max_length=50, unique=True)
+    account             = models.OneToOneField('Account', on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.company_name
+
+class Customer(models.Model):
+    first_name          = models.CharField(max_length=30)
+    last_name           = models.CharField(max_length=30)
+    account             = models.OneToOneField('Account', on_delete=models.CASCADE)
+
+
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+    
+
+
+class Address(models.Model):
+    state               = models.CharField(max_length=30)
+    city                = models.CharField(max_length=30)
+
+
 
 # Create your models here.
 class Account(AbstractBaseUser):
@@ -76,31 +110,16 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
-    
-class Rider(models.Model):
-    first_name          = models.CharField(max_length=30)
-    last_name           = models.CharField(max_length=30)
-    account             = models.OneToOneField(Account, on_delete=models.CASCADE)
 
-    def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+    ACCOUNT_TYPE_MODEL = {
+        'rider': Rider,
+        'customer': Customer,
+        'vendor': Vendor
+    }
 
-class Vendor(models.Model):
-    company_name        = models.CharField( max_length=50, unique=True)
-    company_address     = models.CharField( max_length=50, unique=True)
-    account             = models.OneToOneField(Account, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return self.company_name
-
-class Customer(models.Model):
-    first_name          = models.CharField(max_length=30)
-    last_name           = models.CharField(max_length=30)
-    account             = models.OneToOneField(Account, on_delete=models.CASCADE)
-
-
-    def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+    def get_account_type_instance(self):
+        return self.ACCOUNT_TYPE_MODEL.get(self.user_type).objects.get(account=self)
+        
 
 class Delivery(models.Model):
     customer                = models.ForeignKey(Customer, on_delete=models.CASCADE)

@@ -1,8 +1,9 @@
-from django.shortcuts import render
-from rest_framework.views import APIView, Response
+from django.shortcuts import render, get_object_or_404
+from rest_framework.views import APIView
 from rest_framework import generics
-from .models import Rider, Customer, Vendor
-from .serializers import RiderRegisterSerializer, CustomerRegisterSerializer, VendorRegisterSerializer
+from rest_framework.response import Response
+from .models import Rider, Customer, Vendor, Account
+from .serializers import RiderRegisterSerializer, CustomerRegisterSerializer, VendorRegisterSerializer, AccountSerializer
 
 # Create your views here.
 
@@ -40,3 +41,37 @@ class RegisterVendorView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=200)
+
+
+class AccountDetail(APIView):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    ACCOUNT_TYPE_MODEL_SERIALIZER = {
+        'rider': RiderRegisterSerializer,
+        'customer': CustomerRegisterSerializer,
+        'vendor': VendorRegisterSerializer,
+    }
+
+    def get(self, request, pk):
+        data = {}
+        account = get_object_or_404(Account, pk=pk) # getting the account model
+
+        account_type_serializer = self.get_account_type_serialized_data(account) # get account type model serializer instance
+
+        return Response(account_type_serializer.data, status=200)
+
+    def get_account_type_serialized_data(self, account):
+        model = account.get_account_type_instance()
+        serializer_class = self.get_account_type_serializer(account.user_type)
+        serializer = serializer_class(model)
+        return serializer
+
+    
+    def get_account_type_serializer(self, account_type):
+        return self.ACCOUNT_TYPE_MODEL_SERIALIZER.get(account_type)
+
+
+
+
+

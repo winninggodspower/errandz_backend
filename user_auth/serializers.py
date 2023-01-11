@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Account, Rider, Customer, Vendor
+from user_auth.models import Account, Rider, Customer, Vendor
 
 
 class AccountRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     class Meta:
       model = Account
-      fields = ['email', 'phone', 'state', 'city', 'password', 'password2', 'user_type']
+      fields = ['id', 'email', 'phone', 'state', 'city', 'password', 'password2', 'user_type']
       extra_kwargs = {
         'password': {'write_only': True},
       }
@@ -77,3 +77,10 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
     account = account.save()
     customer = Vendor.objects.create(**validated_data, account=account)
     return customer
+
+
+class AccountSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Account
+        fields = ['id', 'email', 'phone', 'state', 'city','user_type']
