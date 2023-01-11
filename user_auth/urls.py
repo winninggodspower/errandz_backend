@@ -1,4 +1,5 @@
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.urlpatterns import format_suffix_patterns
 from django.urls import path
 from . import views
 
@@ -8,3 +9,5 @@ urlpatterns = [
     path('register/vendor', views.RegisterVendorView.as_view()),
     path('api-token-auth/', obtain_auth_token)
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
