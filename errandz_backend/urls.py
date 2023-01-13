@@ -11,7 +11,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Errandz API",
       default_version='v1',
-      description="Dummy description",
+      description="Errandz Api Playground",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@dummy.local"),
       license=openapi.License(name="BSD License"),

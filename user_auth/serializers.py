@@ -9,6 +9,7 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
       fields = ['id', 'email', 'phone', 'state', 'city', 'password', 'password2', 'user_type']
       extra_kwargs = {
         'password': {'write_only': True},
+        'user_type': {'required': False}
       }
 
     def save(self):
@@ -84,3 +85,7 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['id', 'email', 'phone', 'state', 'city','user_type']
+
+        extra_kwargs = {
+        'user_type': {'required': True},
+      }

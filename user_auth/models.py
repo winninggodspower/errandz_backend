@@ -1,7 +1,7 @@
 from django.db import models
 from . import receivers
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+from django.shortcuts import get_object_or_404
 # create a new user
 # create a superuser
 
@@ -118,5 +118,5 @@ class Account(AbstractBaseUser):
     }
     
     def get_account_type_instance(self):
-        return self.ACCOUNT_TYPE_MODEL.get(self.user_type).objects.get(account=self)
+        return get_object_or_404(self.ACCOUNT_TYPE_MODEL.get(self.user_type), account=self)
         
