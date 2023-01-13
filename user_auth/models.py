@@ -97,7 +97,7 @@ class Account(AbstractBaseUser):
 
     objects = MyAccountManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone']
+    REQUIRED_FIELDS = []
 
     def __str__(self) -> str:
         return self.email
@@ -120,47 +120,6 @@ class Account(AbstractBaseUser):
     def get_account_type_instance(self):
         return self.ACCOUNT_TYPE_MODEL.get(self.user_type).objects.get(account=self)
         
-
-class Delivery(models.Model):
-    customer                = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    pickup_location         = models.CharField( max_length=50)
-    recipient_name          = models.CharField( max_length=50)
-    recipient_email         = models.EmailField( max_length=254)
-    recipient_phone_number  = models.CharField( max_length=50)
-    pickup_date             = models.DateTimeField(auto_now_add=True)
-
-    delivery_date           = models.DateTimeField(null=True)
-    delivery_location       = models.CharField(max_length=50)
-    recievers_name          = models.CharField(max_length=50)
-    receivers_email         = models.EmailField( max_length=254)
-    receiver_phone_number   = models.CharField(max_length=11)
-    goods_description       = models.TextField()
-
-    has_driver_accepted_request = models.BooleanField(default=False)
-    accepted_rider              = models.ForeignKey(Rider, on_delete=models.CASCADE, null=True, blank=True) 
-    goods_delivered             = models.BooleanField(default=False)
-    delivery_distance           = models.IntegerField()
-    payment_ifo            = models.ForeignKey("PaymentInfo", on_delete=models.DO_NOTHING)
-
-    PRICE_FOR_3KM = 500
-    PRICE_FOR_1KM_ADDITION = 100
-
-    def accept_request(self, rider: Rider):
-        if self.has_driver_accepted_request == True:
-            return 
-        self.accepted_rider = rider
-        return self.save()
-
-    def get_delivery_amount(self):
-        if self.delivery_distance <= 3:
-            return self.PRICE_FOR_3KM  
-        else:
-            return self.PRICE_FOR_3KM + (self.delivery_distance - 3)*self.PRICE_FOR_1KM_ADDITION
-
-class PaymentInfo(models.Model):
-    amount = models.IntegerField()
-    customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING)
-
 
 class Address(models.Model):
     state               = models.CharField(max_length=30)

@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import urllib.request
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/', 'http://localhost:8000/']
+CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/', 'http://localhost:8000/', '127.0.0.1:5173/']
 
 AUTH_USER_MODEL = 'user_auth.Account'
 
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'user_auth',
+    'delivery',
 ]
 
 REST_FRAMEWORK = {
@@ -76,16 +78,24 @@ WSGI_APPLICATION = 'errandz_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+def connect():
+    try:
+        urllib.request.urlopen('https://google.com')
+        return True
+    except:
+        return False
+
+if connect():
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
+        }
     }
-}
 
 
 # Password validation
