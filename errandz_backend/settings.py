@@ -18,7 +18,7 @@ DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/', 'http://localhost:8000/', 'http://localhost:5173/']
+CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/', 'http://localhost:8000/', 'http://localhost:5173/', 'http://localhost:3000/']
 
 AUTH_USER_MODEL = 'user_auth.Account'
 
