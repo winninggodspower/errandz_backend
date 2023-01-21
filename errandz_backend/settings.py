@@ -59,7 +59,8 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = False                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 CORS_ORIGIN_WHITELIST = (
   'http://localhost:5173',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'https://*errandzbackend-production.up.railway.app/',
 )
 
 ROOT_URLCONF = 'errandz_backend.urls'
