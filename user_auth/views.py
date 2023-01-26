@@ -4,6 +4,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from .models import Rider, Customer, Vendor, Account
 from .serializers import RiderRegisterSerializer, CustomerRegisterSerializer, VendorRegisterSerializer, AccountSerializer
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -46,6 +47,7 @@ class RegisterVendorView(generics.CreateAPIView):
 class AccountDetail(APIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
+    permission_classes = [IsAuthenticated]
 
     ACCOUNT_TYPE_MODEL_SERIALIZER = {
         'rider': RiderRegisterSerializer,
@@ -53,11 +55,11 @@ class AccountDetail(APIView):
         'vendor': VendorRegisterSerializer,
     }
 
-    def get(self, request, pk):
+    def get(self, request):
         data = {}
-        account = get_object_or_404(Account, pk=pk) # getting the account model
+        account = request.user # getting the account model
 
-        account_type_serializer = self.get_account_type_serialized_data(account) # get account type model serializer instance
+        account_type_serializer = self.get_account_type_serialized_data(account) # get account type model serializer instance and passing in account model
 
         return Response(account_type_serializer.data, status=200)
 
