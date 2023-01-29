@@ -89,9 +89,9 @@ class AccountSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
           'user_type': {'required': True},
-          'profile_image': { 'read_only': True }
         }
 
     def get_image_url(self, obj):
         request = self.context.get("request")
-        return request.build_absolute_uri(obj.profile_image.url)
+        print('this method is called')
+        return obj.profile_image.url
