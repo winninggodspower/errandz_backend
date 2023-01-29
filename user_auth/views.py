@@ -73,7 +73,12 @@ class AccountDetail(APIView):
     def get_account_type_serializer(self, account_type):
         return self.ACCOUNT_TYPE_MODEL_SERIALIZER.get(account_type)
 
+class AccountDetailId(AccountDetail):
+    
+    def get(self, request, pk):
+        data = {}
+        account = get_object_or_404(Account, pk=pk) # getting the account model
 
+        account_type_serializer = self.get_account_type_serialized_data(account) # get account type model serializer instance and passing in account model
 
-
-
+        return Response(account_type_serializer.data, status=200)

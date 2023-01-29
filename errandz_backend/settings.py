@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import requests
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    "phonenumber_field",
     'user_auth',
 ]
   
@@ -56,12 +58,13 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = False                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-CORS_ORIGIN_WHITELIST = (
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'https://errandzbackend-production.up.railway.app',
-)
+# allowed all for testing. this should be changed in production                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = (
+#   'http://localhost:5173',
+#   'http://localhost:3000',
+#   'https://errandzbackend-production.up.railway.app',
+# )
 
 ROOT_URLCONF = 'errandz_backend.urls'
 
@@ -87,16 +90,32 @@ WSGI_APPLICATION = 'errandz_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+def is_connected():
+    try:
+        requests.get('https://www.google.com')
+        return True
+    except requests.exceptions.ConnectionError:
+        return False
+
+if is_connected():
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
+        }
     }
-}
+else:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

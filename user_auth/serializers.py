@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from user_auth.models import Account, Rider, Customer, Vendor
-
+from phonenumber_field.serializerfields import PhoneNumberField
 
 class AccountRegistrationSerializer(serializers.ModelSerializer):
+    phone = PhoneNumberField(region="NG")
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     class Meta:
       model = Account
@@ -81,11 +82,16 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
-
+    profile_image = serializers.SerializerMethodField('get_image_url')
     class Meta:
         model = Account
-        fields = ['id', 'email', 'phone', 'state', 'city','user_type']
+        fields = ['id', 'email', 'phone', 'state', 'city','user_type', 'profile_image']
 
         extra_kwargs = {
-        'user_type': {'required': True},
-      }
+          'user_type': {'required': True},
+          'profile_image': { 'read_only': True }
+        }
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.profile_image.url)

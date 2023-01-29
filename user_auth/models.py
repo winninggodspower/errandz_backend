@@ -2,8 +2,7 @@ from django.db import models
 from . import receivers
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.shortcuts import get_object_or_404
-# create a new user
-# create a superuser
+from phonenumber_field.modelfields import PhoneNumberField
 
 class MyAccountManager(BaseUserManager):
 
@@ -81,7 +80,7 @@ class Address(models.Model):
 # Create your models here.
 class Account(AbstractBaseUser):
     email               = models.EmailField(verbose_name='email', max_length=60, unique=True)
-    phone               = models.CharField(max_length=11, unique=True)
+    phone               = PhoneNumberField(unique=True)
     date_joined         = models.DateField(verbose_name='date joined', auto_now_add=True)
     last_login          = models.DateField(verbose_name='last login', auto_now=True)
     is_admin            = models.BooleanField(default=False)
