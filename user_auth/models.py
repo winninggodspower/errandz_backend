@@ -96,7 +96,7 @@ class Account(AbstractBaseUser):
 
     objects = MyAccountManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone']
+    REQUIRED_FIELDS = []
 
     def __str__(self) -> str:
         return self.email
@@ -115,7 +115,11 @@ class Account(AbstractBaseUser):
         'customer': Customer,
         'vendor': Vendor
     }
-    
+
     def get_account_type_instance(self):
         return get_object_or_404(self.ACCOUNT_TYPE_MODEL.get(self.user_type), account=self)
         
+
+class Address(models.Model):
+    state               = models.CharField(max_length=30)
+    city                = models.CharField(max_length=30)
