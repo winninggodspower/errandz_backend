@@ -7,15 +7,21 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
     phone = PhoneNumberField(region="NG")
     password2 = serializers.CharField(
         style={'input_type': 'password'}, write_only=True)
+    image_url = serializers.SerializerMethodField('get_image_url')
 
     class Meta:
         model = Account
         fields = ['id', 'email', 'phone', 'state',
-                  'city', 'password', 'password2', 'user_type', 'profile_image']
+                  'city', 'password', 'password2', 'user_type', 'profile_image', 'image_url']
         extra_kwargs = {
             'password': {'write_only': True},
             'user_type': {'required': False}
         }
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        print(self.context)
+        return request.build_absolute_uri(obj.profile_image.url)
 
     def save(self):
         account = Account(

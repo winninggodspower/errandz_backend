@@ -171,3 +171,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # paystack settings
 PAYSTACK_PUBLIC_KEY = os.getenv('PAYSTACK_PUBLIC_KEY')
 PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY')
+
+
+#twillio settings
+account_sid = os.environ['TWILIO_ACCOUNT_SID']
+auth_token = os.environ['TWILIO_AUTH_TOKEN']
+twilio_phone_number = os.environ.get('TWILIO_PHONE_NUMBER')
+
+print(account_sid)

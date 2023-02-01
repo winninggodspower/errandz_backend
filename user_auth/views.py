@@ -59,14 +59,14 @@ class AccountDetail(APIView):
         data = {}
         account = request.user # getting the account model
 
-        account_type_serializer = self.get_account_type_serialized_data(account) # get account type model serializer instance and passing in account model
+        account_type_serializer = self.get_account_type_serialized_data(account, request) # get account type model serializer instance and passing in account model
 
         return Response(account_type_serializer.data, status=200)
 
-    def get_account_type_serialized_data(self, account):
+    def get_account_type_serialized_data(self, account, request):
         model = account.get_account_type_instance()
         serializer_class = self.get_account_type_serializer(account.user_type)
-        serializer = serializer_class(model)
+        serializer = serializer_class(model, context={'request': request})
         return serializer
 
     

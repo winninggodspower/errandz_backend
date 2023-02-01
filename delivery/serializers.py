@@ -17,7 +17,7 @@ class DeliverySerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Notification
+        model = Notification
         fields = '__all__'
 
 class AcceptDeliveryRequestSerializer(serializers.Serializer):
