@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from .models import Delivery, Notification
 from user_auth.models import Account
 from django.conf import settings
+from django.core.mail import send_mail
 from twilio.rest import Client
 
 
@@ -30,6 +31,13 @@ def create_profile(sender, instance, created, **kwargs):
                      from_=settings.twilio_phone_number,
                      to=[rider.phone for rider in riders]
                     )
+
+            #send email notification
+            subject = 'Incoming delivery'
+            message = f'Incoming delivery from {instance.customer.first_name}'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [user.email, ]
+            send_mail( subject, message, email_from, recipient_list )
 
 
             instance.notification_sent = True

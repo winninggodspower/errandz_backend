@@ -35,7 +35,7 @@ def get_profile_image_path(self, filename):
     return f'profile_images/{self.pk}/profile_image.png'
 
 def get_default_profile_image():
-    return 'profile_images/default/profile_avatar.png'
+    return 'profile_images/default/profile_avatar.jpg'
 
 ACCOUNT_CHOICES = (
     ('rider', 'Rider'),
