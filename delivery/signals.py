@@ -9,12 +9,11 @@ from django.core.mail import send_mail
 from twilio.rest import Client
 
 
-
 @receiver(post_save, sender=Delivery)
-def create_profile(sender, instance, created, **kwargs):
+def check_payment_verified(sender, instance, created, **kwargs):
     if created :
-        # instance.verify_payment()
-        if not instance.payment_verified and not instance.notification_sent:
+        instance.verify_payment()
+        if instance.payment_verified and not instance.notification_sent:
             riders = Account.objects.filter(user_type='rider').all()
 
             # send the email here
@@ -25,19 +24,18 @@ def create_profile(sender, instance, created, **kwargs):
                 )
 
             #send text to drivers
-            client = Client(settings.account_sid, settings.auth_token)
-            message = client.messages.create(
-                     body="Incoming delivery request. check you dashboard notification to accept",
-                     from_=settings.twilio_phone_number,
-                     to=[rider.phone for rider in riders]
-                    )
+            # client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
+            # message = client.messages.create(
+            #          body="Incoming delivery request. check you dashboard notification to accept",
+            #          from_=settings.TWILIO_PHONE_NUMBER,
+            #          to=[rider.phone.as_international for rider in riders if rider.phone.national_number is not None]
+            #         )
 
             #send email notification
-            subject = 'Incoming delivery'
-            message = f'Incoming delivery from {instance.customer.first_name}'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [user.email, ]
-            send_mail( subject, message, email_from, recipient_list )
-
+            # subject = 'Incoming delivery'
+            # message = f'Incoming delivery from {instance.customer.first_name}'
+            # email_from = settings.EMAIL_HOST_USER
+            # recipient_list = [ rider.email for rider in riders ]
+            # send_mail( subject, message, email_from, recipient_list )
 
             instance.notification_sent = True

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -7,6 +7,7 @@ from .permissions import IsRider, IsCustomer, IsNotificationOwner
 
 from .models import Delivery, Notification
 from .serializers import DeliverySerializer, NotificationSerializer, AcceptDeliveryRequestSerializer
+from .Paystack import PayStack
 
 # Create your views here.
 
@@ -16,7 +17,16 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsCustomer]
 
     def perform_create(self, serializer):
-        serializer.save(customer=self.request.user.get_account_type_instance())
+        data = serializer.save(customer=self.request.user.get_account_type_instance())
+    
+    def post(self, request, *args, **kwargs):
+        data = {}
+        response = self.create(request, *args, **kwargs)
+        delivery_model = get_object_or_404(Delivery, id=response.data.get('id'))
+        checkout_url = PayStack().generate_checkout_url(delivery_model)
+        data = {**response.data, 'checkout_url': checkout_url}
+        return Response(data, status=status.HTTP_201_CREATED)
+
 
 class NotificationView(generics.RetrieveAPIView):
     queryset = Notification

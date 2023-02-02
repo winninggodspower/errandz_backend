@@ -1,6 +1,7 @@
 from django.db import models
 from user_auth.models import Customer, Rider, Account
 from phonenumber_field.modelfields import PhoneNumberField
+import uuid
 from .Paystack import PayStack
 
 # Create your models here.
@@ -32,8 +33,8 @@ class Delivery(models.Model):
     delivery_distance           = models.PositiveIntegerField()
     notification_sent           = models.BooleanField(default=False)
 
+    ref                     = models.UUIDField(default = uuid.uuid4, editable = False)
     amount                  = models.PositiveIntegerField(null=True, blank=True)
-    ref                     = models.CharField(max_length=200, null=True, blank=True)
     payment_verified        = models.BooleanField(default=False)
     date_created            = models.DateTimeField(auto_now_add=True)
 
@@ -42,7 +43,7 @@ class Delivery(models.Model):
     class Meta:
         ordering = ('-date_created',)
 
-    PRICE_FOR_3KM = 500
+    PRICE_FOR_3KM = 600
     PRICE_FOR_1KM_ADDITION = 100
 
 
@@ -59,7 +60,7 @@ class Delivery(models.Model):
 
     def get_delivery_amount(self):
         if self.delivery_distance <= 3:
-            return self.PRICE_FOR_3KM  
+            return self.PRICE_FOR_3KM
         else:
             return self.PRICE_FOR_3KM + (self.delivery_distance - 3)*self.PRICE_FOR_1KM_ADDITION
 
