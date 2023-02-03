@@ -24,18 +24,18 @@ def check_payment_verified(sender, instance, created, **kwargs):
                 )
 
             #send text to drivers
-            # client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
-            # message = client.messages.create(
-            #          body="Incoming delivery request. check you dashboard notification to accept",
-            #          from_=settings.TWILIO_PHONE_NUMBER,
-            #          to=[rider.phone.as_international for rider in riders if rider.phone.national_number is not None]
-            #         )
+            client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
+            message = client.messages.create(
+                     body="Incoming delivery request. check you dashboard notification to accept",
+                     from_=settings.TWILIO_PHONE_NUMBER,
+                     to=[rider.phone.as_international for rider in riders if rider.phone.national_number is not None]
+                    )
 
-            #send email notification
-            # subject = 'Incoming delivery'
-            # message = f'Incoming delivery from {instance.customer.first_name}'
-            # email_from = settings.EMAIL_HOST_USER
-            # recipient_list = [ rider.email for rider in riders ]
-            # send_mail( subject, message, email_from, recipient_list )
+            # send email notification
+            subject = 'Incoming delivery'
+            message = f'Incoming delivery from {instance.customer.first_name}'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [ rider.email for rider in riders ]
+            send_mail( subject, message, email_from, recipient_list )
 
             instance.notification_sent = True
