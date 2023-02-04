@@ -64,11 +64,11 @@ MIDDLEWARE = [
 
 # allowed all for testing. this should be changed in production                                           
 CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ORIGIN_WHITELIST = (
-#   'http://localhost:5173',
-#   'http://localhost:3000',
-#   'https://errandzbackend-production.up.railway.app',
-# )
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://errandzbackend-production.up.railway.app',
+)
 
 ROOT_URLCONF = 'errandz_backend.urls'
 
