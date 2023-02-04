@@ -1,5 +1,6 @@
 #!/bin/bash
-
+echo "activating virtual env"
+source venv/Scripts/activate
 # Build the project
 echo "Building the project..."
 python3.9 -m pip install -r requirements.txt
