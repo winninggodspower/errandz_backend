@@ -15,7 +15,7 @@ from .Paystack import PayStack
 class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
     queryset = Delivery.objects.all()
     serializer_class = DeliverySerializer
-    permission_classes = [IsAuthenticated, IsCustomer``]
+    permission_classes = [IsAuthenticated, IsCustomer]
 
     def perform_create(self, serializer):
         data = serializer.save(customer=self.request.user.get_account_type_instance())
