@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from user_auth.models import Account, Rider, Customer, Vendor
 from phonenumber_field.serializerfields import PhoneNumberField
+from django.contrib.sites.models import Site
 
 
 class AccountRegistrationSerializer(serializers.ModelSerializer):
@@ -19,9 +20,7 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
         }
 
     def get_image_url(self, obj):
-        request = self.context.get("request")
-        print(self.context)
-        return request.build_absolute_uri(obj.profile_image.url)
+        return '%s/%s' % (Site.objects.get_current().domain, obj.profile_image)
 
     def save(self):
         account = Account(
@@ -37,12 +36,8 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
         if password != password2:
             raise serializers.ValidationError(
                 {'password2': 'Passwords must match'})
+        if Account.objects.filter(phone=account.phone).all():
 
-        if password != password2:
-            raise serializers.ValidationError(
-                {'password2': 'Passwords must match'})
-
-        if Account.objects.filter(phone=account.phone):
             raise serializers.ValidationError(
                 {'phone': 'account with this phone already exist'})
 
@@ -63,7 +58,6 @@ class RiderRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         account_data = validated_data.pop('account')
         account_data['user_type'] = 'rider'
-        print(account_data)
         account = AccountRegistrationSerializer(data=account_data)
         account.is_valid()
         account = account.save()
@@ -81,7 +75,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         account_data = validated_data.pop('account')
         account_data['user_type'] = 'customer'
-        print(account_data)
         account = AccountRegistrationSerializer(data=account_data)
         account.is_valid()
         account = account.save()
@@ -99,7 +92,6 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         account_data = validated_data.pop('account')
         account_data['user_type'] = 'vendor'
-        print(account_data)
         account = AccountRegistrationSerializer(data=account_data)
         account.is_valid()
         account = account.save()
@@ -120,6 +112,4 @@ class AccountSerializer(serializers.ModelSerializer):
         }
 
     def get_profile_image(self, obj):
-        request = self.context.get("request")
-        print('this method is called')
-        return obj.profile_image.url
+        return 'https://%s/%s' % (Site.objects.get_current().domain, obj.profile_image)

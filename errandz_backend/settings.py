@@ -29,6 +29,7 @@ AUTH_USER_MODEL = 'user_auth.Account'
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'user_auth',
     'delivery',
 ]
+SITE_ID = 1
   
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -99,7 +101,6 @@ def is_connected():
     except requests.exceptions.ConnectionError:
         return False
 
-# if is_connected():
 
 DATABASES = {
     'default': {
@@ -111,13 +112,7 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
     }
 }
-# else:
-#     DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
+
 
 
 # Password validation

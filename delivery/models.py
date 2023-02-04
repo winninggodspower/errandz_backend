@@ -14,6 +14,11 @@ class Delivery(models.Model):
         4: 'completed'
     }
 
+    ref                     = models.UUIDField(
+                                            default = uuid.uuid4,
+                                            editable = False,
+                                            primary_key=True,
+                                            unique=True)
     customer                = models.ForeignKey(Customer, on_delete=models.CASCADE)
     pickup_location         = models.CharField( max_length=500)
     recipient_name          = models.CharField( max_length=500)
@@ -33,10 +38,11 @@ class Delivery(models.Model):
     delivery_distance           = models.PositiveIntegerField()
     notification_sent           = models.BooleanField(default=False)
 
-    ref                     = models.UUIDField(default = uuid.uuid4, editable = False)
     amount                  = models.PositiveIntegerField(null=True, blank=True)
+    checkout_url            = models.CharField( max_length=500, null=True, blank=True)
     payment_verified        = models.BooleanField(default=False)
     date_created            = models.DateTimeField(auto_now_add=True)
+    last_updated            = models.DateTimeField(auto_now=True)
 
     status                  = models.CharField(max_length=100, default=STEPS.get(1)) 
 
@@ -74,7 +80,14 @@ class Delivery(models.Model):
             self.save()
 
         return self.payment_verified
+    
+    def get_uuid_string(self):
+        return str(self.ref)
 
 class Notification(models.Model):
     message = models.CharField(max_length=100)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+class History(models.Model):
+    message = models.CharField(max_length=100)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE) 

@@ -36,10 +36,10 @@ class PayStack:
         body = {
             'email': delivery.customer.account.email,
             'amount': delivery.get_delivery_amount() * 100,
-            'reference': delivery.ref,
+            'reference': delivery.get_uuid_string(),
         }
 
-        print(url)
         response = requests.post(url, headers=headers, json=body)
 
-        return response.json().get('data').get('authorization_url')
+        return response.json().get('data').get('authorization_url') 
+    
