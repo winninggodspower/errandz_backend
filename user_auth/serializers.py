@@ -38,9 +38,19 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'password2': 'Passwords must match'})
 
+        if password != password2:
+            raise serializers.ValidationError(
+                {'password2': 'Passwords must match'})
+
+        if Account.objects.filter(phone=account.phone):
+            raise serializers.ValidationError(
+                {'phone': 'account with this phone already exist'})
+
+
         account.set_password(password)
         account.save()
         return account
+
 
 
 class RiderRegisterSerializer(serializers.ModelSerializer):
