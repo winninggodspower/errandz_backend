@@ -48,7 +48,7 @@ class SuccessfulDeliveryView(APIView):
         return Response(request.data, status=200)
 
     def get(self,  request):
-        ref = request.query_params.get('ref')
+        ref = request.query_params.get('reference')
         delivery_model = get_object_or_404(Delivery, ref=ref)
         check_payment_verified(delivery_model)
         return redirect('https://errandz-frontend.vercel.app/login')

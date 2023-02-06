@@ -29,14 +29,16 @@ def check_payment_verified(instance):
             ).save()
 
         #send text to drivers
-        print(settings.ACCOUNT_SID)
-        print(settings.AUTH_TOKEN)
-        client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
-        message = client.messages.create(
-                    body=f"Incoming delivery request  from {instance.customer.first_name}. check you dashboard notification to accept",
-                    from_=settings.TWILIO_PHONE_NUMBER,
-                    to=[rider.phone.as_international for rider in riders if rider.phone.national_number is not None]
-                )
+        try:
+                
+            client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
+            message = client.messages.create(
+                        body=f"Incoming delivery request  from {instance.customer.first_name}. check you dashboard notification to accept",
+                        from_=settings.TWILIO_PHONE_NUMBER,
+                        to=[rider.phone.as_international for rider in riders if rider.phone.national_number is not None]
+                    )
+        except:
+            print("had issues sending messages")
 
         # send email notification
         subject = 'Incoming delivery'
