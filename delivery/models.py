@@ -9,7 +9,7 @@ from .Paystack import PayStack
 class Delivery(models.Model):
     STEPS = {
         1: 'payment not verified',
-        2: 'driver\'s not yet accepted request',
+        2: 'rider\'s not yet accepted request',
         3: 'pending delivery',
         4: 'completed'
     }
@@ -73,19 +73,25 @@ class Delivery(models.Model):
     def verify_payment(self):
         paystack = PayStack()
         status, result = paystack.verify_payment(self.ref, self.amount)
+        
         if status:
-            if result['amount'] / 100 == self.amount and self.amount == self.get_delivery_amount():
-                self.payment_verified = True
-                self.status = self.STEPS.get(2)
+            # if result['amount'] / 100 == self.amount and self.amount == self.get_delivery_amount():
+            self.payment_verified = True
+            self.status = self.STEPS.get(2)
             self.save()
-
+        
         return self.payment_verified
     
     def get_uuid_string(self):
         return str(self.ref)
 
+    def save(self, *args, **kwargs):
+        self.amount = self.get_delivery_amount()
+        super(Delivery, self).save(*args, **kwargs)
+
 class Notification(models.Model):
     message = models.CharField(max_length=100)
+    date_created = models.DateTimeField(auto_now_add=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
 class History(models.Model):

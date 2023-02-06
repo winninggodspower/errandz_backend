@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -9,6 +9,7 @@ import json
 from .models import Delivery, Notification, History
 from .serializers import DeliverySerializer, NotificationSerializer, AcceptDeliveryRequestSerializer, HistorySerializer
 from .Paystack import PayStack
+from .signals import check_payment_verified
 
 # Create your views here.
 
@@ -37,6 +38,20 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
         delivery = Delivery.objects.filter(customer=request.user.customer).all()
         serializer = self.serializer_class(delivery, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SuccessfulDeliveryView(APIView):
+
+    def post(self, request):
+        ref = request.data.get("reference")
+        delivery_model = get_object_or_404(Delivery, ref=ref)
+        check_payment_verified(delivery_model)
+        return Response(request.data, status=200)
+
+    def get(self,  request):
+        ref = request.query_params.get('ref')
+        delivery_model = get_object_or_404(Delivery, ref=ref)
+        check_payment_verified(delivery_model)
+        return redirect('https://errandz-frontend.vercel.app/login')
 
 class NotificationView(generics.RetrieveAPIView):
     queryset = Notification
