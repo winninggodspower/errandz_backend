@@ -90,8 +90,15 @@ class Delivery(models.Model):
         super(Delivery, self).save(*args, **kwargs)
 
 class Notification(models.Model):
+    TYPE = [
+        ('request', "request"),
+        ('received', "received")
+    ]
+
     message = models.CharField(max_length=100)
     date_created = models.DateTimeField(auto_now_add=True)
+    model   = models.ForeignKey(Delivery, blank=True, null=True, on_delete=models.CASCADE)
+    type    = models.CharField( max_length=50, choices=TYPE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
 class History(models.Model):

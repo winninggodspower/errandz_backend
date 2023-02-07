@@ -25,6 +25,8 @@ def check_payment_verified(instance):
         for rider in riders:
             Notification(
                 message = 'incomming delivery request',
+                type = 'request',
+                model = instance,
                 account = rider
             ).save()
 

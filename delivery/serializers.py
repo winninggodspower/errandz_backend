@@ -18,7 +18,7 @@ class DeliverySerializer(serializers.ModelSerializer):
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-
+    model = DeliverySerializer(read_only=True)
     class Meta:
         model = Notification
         fields = '__all__'
@@ -31,7 +31,7 @@ class HistorySerializer(serializers.ModelSerializer):
 
 
 class AcceptDeliveryRequestSerializer(serializers.Serializer):
-    delivery_ref = serializers.IntegerField()
+    delivery_ref = serializers.UUIDField()
 
 
     def save(self, rider):
