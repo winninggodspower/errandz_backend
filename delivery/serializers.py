@@ -2,13 +2,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField
 from .models import Delivery, Notification, History
+from user_auth.serializers import CustomerRegisterSerializer
 
 class DeliverySerializer(serializers.ModelSerializer):
-    recipient_phone_number = PhoneNumberField(region="NG")
-    receiver_phone_number = PhoneNumberField(region="NG")
+    recipient_phone_number  = PhoneNumberField(region="NG")
+    receiver_phone_number   = PhoneNumberField(region="NG")
+    customer                = CustomerRegisterSerializer(read_only=True)
     class Meta:
         model = Delivery
-        fields = ['ref', 'pickup_location', 'recipient_name', 'recipient_email', 'recipient_phone_number', 'delivery_location', 'recievers_name', 'receivers_email', 'receiver_phone_number', 'goods_description', 'delivery_distance', 'status','checkout_url','date_created', 'amount']
+        fields = ['ref', 'pickup_location', 'recipient_name', 'recipient_email', 'recipient_phone_number', 'delivery_location', 'recievers_name', 'receivers_email', 'receiver_phone_number', 'goods_description', 'delivery_distance', 'status','checkout_url','date_created', 'amount', 'customer']
 
         extra_kwargs = {
                     'ref': {'read_only': True},
