@@ -39,6 +39,13 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
         serializer = self.serializer_class(delivery, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class GetDeliveryView(generics.RetrieveAPIView):
+    queryset = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+
+
+
 class SuccessfulDeliveryView(APIView):
 
     def post(self, request):
