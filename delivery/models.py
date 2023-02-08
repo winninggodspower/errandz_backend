@@ -59,7 +59,7 @@ class Delivery(models.Model):
 
         if self.has_driver_accepted_request == True:
             return 
-        self.accepted_rider = account
+        self.rider_who_accepted = account.get_account_type_instance()
         self.has_driver_accepted_request = True
         self.status = self.STEPS.get(3)
         return self.save()

@@ -83,7 +83,7 @@ class AcceptDeliveryRequestView(APIView):
     def post(self, request):
         serializer = AcceptDeliveryRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(rider = request.user)
+        serializer.save(account = request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class HistoryView(APIView):

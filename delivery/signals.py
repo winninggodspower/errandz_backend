@@ -54,7 +54,8 @@ def check_payment_verified(instance):
         if instance.status == instance.STEPS.get(1): 
             instance.status = instance.STEPS.get(2)
 
-    print("it wasnt verified")
+        instance.save()
+
 
 # @receiver(post_save, sender=Delivery)
 def check_payment(sender, instance, created, **kwargs):
