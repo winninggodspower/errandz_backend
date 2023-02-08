@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsRider, IsCustomer, IsNotificationOwner
-import json
+from django.db.models import Q
 
 from .models import Delivery, Notification, History
 from .serializers import DeliverySerializer, NotificationSerializer, AcceptDeliveryRequestSerializer, HistorySerializer
@@ -35,7 +35,12 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
-        delivery = Delivery.objects.filter(customer=request.user.customer).all()
+
+        if request.user.user_type in ["customer", "vendor"]:
+            delivery = Delivery.objects.filter(customer=request.user.customer).all()
+        else:
+            delivery = Delivery.objects.filter(rider_who_accepted=request.user.rider).all()
+
         serializer = self.serializer_class(delivery, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -43,7 +48,6 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
 class GetDeliveryView(generics.RetrieveAPIView):
     queryset = Delivery.objects.all()
     serializer_class = DeliverySerializer
-
 
 
 class SuccessfulDeliveryView(APIView):
