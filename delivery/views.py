@@ -98,3 +98,16 @@ class HistoryView(APIView):
         user_history_models = self.query_set.filter(account=request.user).all()
         serializer = HistorySerializer(user_history_models, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ConfirmDelivery(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+    query_set = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+
+    def post(self, request):
+        ref = request.data.get("reference")
+        delivery_model = get_object_or_404(Delivery, ref=ref)
+        if delivery_model:
+            delivery_model.confirm_delivery(ref)
+            return Response(request.data, status=200)

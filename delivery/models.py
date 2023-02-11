@@ -1,6 +1,7 @@
 from django.db import models
 from user_auth.models import Customer, Rider, Account
 from phonenumber_field.modelfields import PhoneNumberField
+from django.shortcuts import get_object_or_404
 import uuid
 from .Paystack import PayStack
 
@@ -82,6 +83,20 @@ class Delivery(models.Model):
         
         return self.payment_verified
     
+    def confirm_delivery(self, ref):
+        delivery_model = get_object_or_404(Delivery, pk=ref)
+        delivery_model.goods_delivered = True
+        delivery_model.status = delivery_model.STEPS.get(4)
+
+        for account in [delivery_model.customer, delivery_model.rider_who_accepted]:
+            Notification.objects.create(
+                message = f"{delivery_model.recievers_name} received her/his goods",
+                type = Notification.TYPE[1],
+                account = account.account
+            )
+
+
+
     def get_uuid_string(self):
         return str(self.ref)
 
@@ -100,6 +115,7 @@ class Notification(models.Model):
     model   = models.ForeignKey(Delivery, blank=True, null=True, on_delete=models.CASCADE)
     type    = models.CharField( max_length=50, choices=TYPE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    seen    = models.BooleanField(default=False)
 
 class History(models.Model):
     message = models.CharField(max_length=100)
