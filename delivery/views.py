@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsRider, IsCustomer, IsNotificationOwner
-from django.db.models import Q
+from django.db.models import Q,Max,Min
 
 from .models import Delivery, Notification, History
 from .serializers import DeliverySerializer, NotificationSerializer, AcceptDeliveryRequestSerializer, HistorySerializer
@@ -110,4 +110,4 @@ class ConfirmDelivery(APIView):
         delivery_model = get_object_or_404(Delivery, ref=ref)
         if delivery_model:
             delivery_model.confirm_delivery(ref)
-            return Response(request.data, status=200)
+            return Response(request.data, status=200)   
