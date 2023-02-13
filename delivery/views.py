@@ -109,5 +109,6 @@ class ConfirmDelivery(APIView):
         ref = request.data.get("reference")
         delivery_model = get_object_or_404(Delivery, ref=ref)
         if delivery_model:
-            delivery_model.confirm_delivery(ref)
-            return Response(request.data, status=200)   
+            if not delivery_model.confirm_delivery(ref):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(request.data, status=200)

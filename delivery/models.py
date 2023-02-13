@@ -85,8 +85,13 @@ class Delivery(models.Model):
     
     def confirm_delivery(self, ref):
         delivery_model = get_object_or_404(Delivery, pk=ref)
+        print(delivery_model.status)
+        if delivery_model.status != delivery_model.STEPS.get(3):
+            return False
+
         delivery_model.goods_delivered = True
         delivery_model.status = delivery_model.STEPS.get(4)
+        delivery_model.save()
 
         for account in [delivery_model.customer, delivery_model.rider_who_accepted]:
             Notification.objects.create(
@@ -94,6 +99,7 @@ class Delivery(models.Model):
                 type = Notification.TYPE[1],
                 account = account.account
             )
+        return True
 
 
 
@@ -119,4 +125,4 @@ class Notification(models.Model):
 
 class History(models.Model):
     message = models.CharField(max_length=100)
-    account = models.ForeignKey(Account, on_delete=models.CASCADE) 
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
