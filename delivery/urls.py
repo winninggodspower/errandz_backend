@@ -7,5 +7,5 @@ urlpatterns = [
     path('accept_delivery_request', AcceptDeliveryRequestView.as_view()),
     path('successful_delivery', SuccessfulDeliveryView.as_view()),
     path('get_delivery_details/<uuid:pk>', GetDeliveryView.as_view()),
-    path("confirm_deliery",ConfirmDelivery.as_view()),
+    path("confirm_delivery",ConfirmDelivery.as_view()),
 ]
