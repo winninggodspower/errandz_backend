@@ -20,6 +20,7 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
         }
 
     def get_image_url(self, obj):
+        print('%s/%s' % (Site.objects.get_current().domain, obj.profile_image))
         return '%s/%s' % (Site.objects.get_current().domain, obj.profile_image)
 
     def save(self):
