@@ -19,6 +19,7 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsCustomer]
 
     def perform_create(self, serializer):
+        print("does this even run")
         data = serializer.save(customer=self.request.user.get_account_type_instance())
     
     def post(self, request, *args, **kwargs):
@@ -62,7 +63,7 @@ class SuccessfulDeliveryView(APIView):
         ref = request.query_params.get('reference')
         delivery_model = get_object_or_404(Delivery, ref=ref)
         check_payment_verified(delivery_model)
-        return redirect('https://errandz-frontend.vercel.app/login')
+        return redirect('https://errandz.com.ng/dashboard')
 
 class NotificationView(generics.RetrieveAPIView):
     queryset = Notification
@@ -83,9 +84,10 @@ class NotificationView(generics.RetrieveAPIView):
 
 class AcceptDeliveryRequestView(APIView):
     permission_classes = [IsRider]
+    serializer_class = AcceptDeliveryRequestSerializer
 
     def post(self, request):
-        serializer = AcceptDeliveryRequestSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(account = request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)

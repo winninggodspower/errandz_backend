@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.shortcuts import get_object_or_404
 import uuid
 from .Paystack import PayStack
+from payment.models import RiderPickupEarning
 
 # Create your models here.
 
@@ -85,13 +86,20 @@ class Delivery(models.Model):
     
     def confirm_delivery(self, ref):
         delivery_model = get_object_or_404(Delivery, pk=ref)
-        print(delivery_model.status)
+        
+        # checking if the delivery_status is pending delivery
         if delivery_model.status != delivery_model.STEPS.get(3):
             return False
 
         delivery_model.goods_delivered = True
         delivery_model.status = delivery_model.STEPS.get(4)
         delivery_model.save()
+
+        # add earning for rider
+        RiderPickupEarning.objects.create(
+            delivery_model = self,
+            rider          = self.rider_who_accepted
+        )
 
         for account in [delivery_model.customer, delivery_model.rider_who_accepted]:
             Notification.objects.create(

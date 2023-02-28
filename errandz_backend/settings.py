@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     'user_auth',
     'delivery',
+    'payment'
 ]
 SITE_ID = 1
   

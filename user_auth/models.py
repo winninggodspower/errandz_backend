@@ -49,8 +49,28 @@ class Rider(models.Model):
     last_name           = models.CharField(max_length=30)
     account             = models.OneToOneField('Account', on_delete=models.CASCADE)
 
+    def get_total_earning(self):
+        total_earning = 0
+        for earning in self.riderpickupearning_set.all():
+            total_earning += earning.amount
+        return total_earning
+        
+    def get_unpaid_balance(self):
+        total_earning = self.get_total_earning()
+        earning_withdrawn = self.get_amount_withdrawn()
+        return total_earning - earning_withdrawn
+
+    def get_amount_withdrawn(self):
+        amount_withdrawn = 0
+        for withdrawal in self.riderpayment_set().filter(payment_successful=True).all():
+            amount_withdrawn += withdrawal.amount
+        return amount_withdrawn 
+
+    
+
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
+    
 
 class Vendor(models.Model):
     company_name        = models.CharField( max_length=50, unique=True)
