@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from .models import RiderPickupEarning, AccountDetail
+from .models import RiderPickupEarning, AccountDetail, RiderPayment
+from user_auth.models import Rider
 
 class RiderPickupEarningSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +27,18 @@ class AccountDetailsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(result)
         
         return data
+    
+class RiderPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RiderPayment
+        fields = ["amount"]
+
+    def validate(self, data):
+        print(self.context)
+        rider = self.context.get('rider')
+        if data.get("amount") > rider.get_unpaid_balance():
+            raise serializers.ValidationError("earning greater than amount specified")
+        
+        return data
+            
+        

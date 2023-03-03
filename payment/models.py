@@ -81,7 +81,7 @@ class AccountDetail(models.Model):
 class RiderPayment(models.Model):
     transfer_ref   = models.UUIDField(unique=True, primary_key=True, editable=False, default=uuid.uuid4)
     amount         = models.IntegerField()
-    rider           = models.ForeignKey("user_auth.Rider", on_delete=models.CASCADE)
+    rider           = models.ForeignKey("user_auth.Rider", on_delete=models.DO_NOTHING)
     payment_successful = models.BooleanField(default=False)
 
     def make_payment(self):
