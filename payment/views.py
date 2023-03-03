@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .serializers import RiderPickupEarningSerializer, AccountDetailsSerializer
 from .models import RiderPickupEarning, AccountDetail
 from rest_framework import generics, status
@@ -28,13 +28,29 @@ def get_bank_list(request):
     status, result = paystack.get_bank_list()
     return Response(result)
 
-class AccountDetailView(generics.CreateAPIView):
+class AccountDetailView(generics.ListCreateAPIView):
     queryset = AccountDetail.objects.all()
     serializer_class = AccountDetailsSerializer
     permission_classes = [IsRider]
 
     def post(self, request):
+        if AccountDetail.objects.get(rider=request.user.rider):
+            return Response({'message': 'account detial already exist for '}, )
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(rider=request.user.rider)
         return Response(serializer.data)
+
+    def get(self, request):
+        model = get_object_or_404(AccountDetail, rider=request.user.rider)
+        serializer = self.get_serializer(model)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        model = get_object_or_404(AccountDetail, rider=request.user.rider)
+        serializer = self.get_serializer(model, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        model = serializer.save(rider=request.user.rider)
+        model.delete_recipient()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        

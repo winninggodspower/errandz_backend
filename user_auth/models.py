@@ -66,7 +66,8 @@ class Rider(models.Model):
             amount_withdrawn += withdrawal.amount
         return amount_withdrawn 
 
-    
+    def get_account_detail(self):
+        return self.riderpaymet_set().first()
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"

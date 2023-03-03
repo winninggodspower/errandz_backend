@@ -11,23 +11,18 @@ class RiderPickupEarningSerializer(serializers.ModelSerializer):
 class AccountDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountDetail
-        # fields = '__all__'
-        exclude = ['rider', 'is_account_valid', 'recipient_code']
-        # read_only_fields = ['rider']
+        fields = ['account_number', 'bank_name', 'bank_code', 'account_name' ]
+        # exclude = ['rider', 'is_account_valid', 'recipient_code']
+        read_only_fields = ["account_name"]
 
     
     def validate(self, data):
-        is_valid_account_details, result = AccountDetail.validate_account(
+        is_account_detail_valid, result = AccountDetail.resolve_account_detail(
             bank_code=data.get('bank_code'),
-            country_code=data.get('country_code'),
             account_number=data.get('account_number'),
-            account_type=data.get('account_type'),
-            account_name=data.get('account_name'),
-            document_type=data.get('document_type'),
-            document_number=data.get('document_number'),
         )
 
-        if not is_valid_account_details:
+        if not is_account_detail_valid:
             raise serializers.ValidationError(result)
         
         return data

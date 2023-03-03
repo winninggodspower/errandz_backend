@@ -21,12 +21,10 @@ class PayStack:
 
         if response.status_code == 200:
             response_data = response.json()
-            print(( response_data['data']['status'] == 'success', response_data['data']))
             return response_data['data']['status'] == 'success', response_data['data']
 
         
         response_data = response.json()
-        print(response_data)
         return response_data['status'],  response_data['message']
 
     
@@ -53,13 +51,26 @@ class PayStack:
         response = requests.post(url, headers=self.headers, json=body)
         
         response_data = response.json()
-        print(response_data)
         if response.status_code == 200:
             return response_data['data']['status'] == 'success', response_data['data']
 
         return response_data['status'],  response_data['message']
 
-    
+    def resolve_account_detail(self, account_number: int, bank_code: int ):
+        path = ('bank/resolve')
+        url = self.get_url(path)
+
+        payload={"account_number": account_number, "bank_code": bank_code}
+        
+        response = requests.get(url, headers=self.headers, params=payload)
+        
+        response_data = response.json()
+        if response.status_code == 200:
+            return response_data['status'], response_data['data']
+
+        return response_data['status'],  response_data['message']
+
+
     def get_bank_list(self):
         path = ("bank?currency=NGN")
         url = self.get_url(path)
@@ -74,11 +85,12 @@ class PayStack:
     def generate_transfer_recipient(self, **kwargs):
         path = ("transferrecipient")
         url = self.get_url(path)
-        response = requests.post(url, headers=self.headers, body={**kwargs})
+
+        response = requests.post(url, headers=self.headers, json={**kwargs})
                 
         response_data = response.json()
-        if response.status_code == 200:
-            return response_data['data']['status'] == 'success', response_data['data']
+        if response.status_code == 201:
+            return response_data['status'], response_data['data']
 
         return response_data['status'],  response_data['message']
             

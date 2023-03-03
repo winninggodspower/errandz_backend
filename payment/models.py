@@ -13,12 +13,12 @@ class AccountDetail(models.Model):
 
     account_name        = models.CharField(max_length=200)
     account_number      = models.CharField(max_length=50)
-    account_type        = models.CharField(choices=(('personal', 'personal'),( 'business' , 'business' )), max_length=100)
+    account_type        = models.CharField(choices=(('personal', 'personal'),( 'business' , 'business' )), max_length=100, null=True, blank=True)
     country_code        = models.CharField(default="NG", max_length=2)
     bank_code           = models.CharField(max_length=15)
-    bank_name           = models.CharField( max_length=200)
-    document_type       = models.CharField(max_length=100, choices=DOCUMENT_TYPE_CHOICES)
-    document_number     = models.CharField(max_length=100)
+    bank_name           = models.CharField(max_length=200, null=True, blank=True)
+    document_type       = models.CharField(max_length=100, choices=DOCUMENT_TYPE_CHOICES, null=True, blank=True)
+    document_number     = models.CharField(max_length=100, null=True, blank=True)
 
     is_account_valid    = models.BooleanField(default=False)
     recipient_code      = models.CharField(max_length=100, null=True, blank=True)
@@ -45,15 +45,37 @@ class AccountDetail(models.Model):
             document_number=document_number
         )
         return status, result
-
-    def generate_recipient_code(self):
+    
+    @classmethod
+    def resolve_account_detail(cls, account_number=None, bank_code=None):
         paystack = PayStack()
-        status, result = paystack.validate_account(type="nuban", name=self.account_name,
-                                    bank_code=self.bank_code, account_number=self.account_name, 
-                                    currency="NGN")
+        bank_code = bank_code or cls.bank_code
+        account_number = account_number or cls.account_number
+
+        status, result = paystack.resolve_account_detail(account_number, bank_code)
+
+        return status, result
+
+    def generate_recipient_code(self, **kwargs):
+        paystack = PayStack()
+        status, result = paystack.generate_transfer_recipient(**kwargs)
+        print("this is the result: ", result)
         if status:
-            self.recipient_code = result.recipient
+            self.recipient_code = result.get("recipient_code")
+            self.bank_name = result.get("details").get("bank_name")
+            print(result.get("details").get("bank_name"))
             self.save()
+
+    def save(self, *args, **kwargs):
+        is_account_detail_valid, result = self.resolve_account_detail(self.account_number, self.bank_code)
+        if is_account_detail_valid:
+            self.account_name = result.get('account_name')
+        return super().save(*args, **kwargs)
+    
+    def delete_recipient(self):
+        self.recipient_code = None
+        self.save()
+        print(self.recipient_code)
 
 
 class RiderPayment(models.Model):
@@ -62,12 +84,16 @@ class RiderPayment(models.Model):
     rider           = models.ForeignKey("user_auth.Rider", on_delete=models.CASCADE)
     payment_successful = models.BooleanField(default=False)
 
-    # def make_payment(self):
-    #     paystack = PayStack()
-    #     if self.rider.
-    #     status, result = paystack.validate_account(type="nuban", name=self.account_name,
-    #                                 bank_code=self.bank_code, account_number=self.account_name, 
-    #                                 currency="NGN")
+    def make_payment(self):
+        paystack = PayStack()
+        if self.rider.get_unpaid_balance >= self.amount and self.rider.get_account_detail.recipient_code: 
+            status, result = paystack.validate_account(
+                                type="nuban",
+                                name=self.account_name,
+                                bank_code=self.bank_code,
+                                account_number=self.account_name, 
+                                currency="NGN"
+                                )
 
 class RiderPickupEarning(models.Model):
     amount          = models.IntegerField(default=100)
