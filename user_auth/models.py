@@ -62,12 +62,14 @@ class Rider(models.Model):
 
     def get_amount_withdrawn(self):
         amount_withdrawn = 0
-        for withdrawal in self.riderpayment_set().filter(payment_successful=True).all():
+        for withdrawal in self.riderpayment_set.filter(payment_successful=True).all():
             amount_withdrawn += withdrawal.amount
-        return amount_withdrawn 
+        return amount_withdrawn
 
+    @property
     def get_account_detail(self):
-        return self.riderpaymet_set().first()
+        return self.accountdetail
+
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"

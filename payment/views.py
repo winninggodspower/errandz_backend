@@ -59,4 +59,5 @@ class AccountDetailView(generics.ListCreateAPIView):
 def rider_payment(request):
     serializer = RiderPaymentSerializer(data=request.data, context={'rider': request.user.rider})
     serializer.is_valid(raise_exception=True)
+    serializer.save(rider=request.user.rider)
     return Response(serializer.data)

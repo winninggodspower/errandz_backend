@@ -31,14 +31,24 @@ class AccountDetailsSerializer(serializers.ModelSerializer):
 class RiderPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = RiderPayment
-        fields = ["amount"]
+        fields = ["amount", "transfer_ref"]
+        read_only_fields = ["transfer_ref"]
 
     def validate(self, data):
-        print(self.context)
         rider = self.context.get('rider')
         if data.get("amount") > rider.get_unpaid_balance():
-            raise serializers.ValidationError("earning greater than amount specified")
+            raise serializers.ValidationError("amount specified greater than earning ")
         
         return data
-            
+    
+    def save(self, **kwargs):
+        payment = RiderPayment(
+            amount = self.validated_data['amount'],
+            **kwargs
+        )
+        
+        status, result = payment.make_payment()
+        if not status:
+            raise serializers.ValidationError(result)
+        
         

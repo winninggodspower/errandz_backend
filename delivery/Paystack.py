@@ -94,14 +94,23 @@ class PayStack:
 
         return response_data['status'],  response_data['message']
             
-    def initiate_transfer(self, **kwargs):
+    def initiate_transfer(self, amount=None, recipient=None, reference=None):
         path = ("transfer")
-        
         url = self.get_url(path)
-        response = requests.post(url, headers=self.headers, body={**kwargs})
+        
+        body = {
+            "source": "balance",
+            "reason": "Rider payment for earnings", 
+            "amount": amount, 
+            "recipient": recipient,
+            "reference": reference
+        }
+
+        response = requests.post(url, headers=self.headers, json=body)
                 
         response_data = response.json()
         if response.status_code == 200:
-            return response_data['data']['status'] == 'success', response_data['data']
+            return response_data['status'], response_data['data']
 
         return response_data['status'],  response_data['message']
+    

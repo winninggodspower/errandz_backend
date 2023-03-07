@@ -1,5 +1,6 @@
 from django.db import models
 from delivery.Paystack import PayStack
+from django.core.exceptions import ValidationError
 import uuid
 
 # Create your models here.
@@ -83,17 +84,26 @@ class RiderPayment(models.Model):
     amount         = models.IntegerField()
     rider           = models.ForeignKey("user_auth.Rider", on_delete=models.DO_NOTHING)
     payment_successful = models.BooleanField(default=False)
+    date_created    = models.DateTimeField( auto_now_add=True)
 
+    
     def make_payment(self):
         paystack = PayStack()
-        if self.rider.get_unpaid_balance >= self.amount and self.rider.get_account_detail.recipient_code: 
-            status, result = paystack.validate_account(
-                                type="nuban",
-                                name=self.account_name,
-                                bank_code=self.bank_code,
-                                account_number=self.account_name, 
-                                currency="NGN"
+        if self.rider.get_unpaid_balance() >= self.amount and self.rider.accountdetail.recipient_code:
+            transfer_ref = uuid.uuid4()
+            status, result = paystack.initiate_transfer(
+                                amount=self.amount,
+                                recipient=self.rider.get_account_detail.recipient_code,
+                                reference=str(transfer_ref)
                                 )
+            
+            if not status:
+                return status, result
+
+            # save it if there is a positive status
+            self.transfer_ref = transfer_ref
+            self.save()
+            return status, self
 
 class RiderPickupEarning(models.Model):
     amount          = models.IntegerField(default=100)
