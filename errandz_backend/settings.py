@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "phonenumber_field",
     'user_auth',
     'delivery',
-    'payment'
+    'payment',
+    'notification',
 ]
 SITE_ID = 1
   
@@ -187,3 +188,18 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PW')
+
+# media storage setting 
+DEFAULT_FILE_STORAGE = 'storages.backends.ftp.FTPStorage'
+FTP_USER = 'epiz_33043501'
+FTP_PASSWORD = 'i6DkktsmpF8gRs'
+FTP_HOST = 'ftpupload.net'
+FTP_PORT = '21'
+FTP_STORAGE_LOCATION = f'ftp://{FTP_USER}:{FTP_PASSWORD}@{FTP_HOST}:{FTP_PORT}'
+
+
+# firebase notification setting
+VAPID_SECRETS = {
+    "PUBLIC_KEY":  "this is the vapid public key",
+    "PRIVATE_KEY": "this is the vapid private"
+}

@@ -3,6 +3,7 @@ from . import receivers
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.shortcuts import get_object_or_404
 from phonenumber_field.modelfields import PhoneNumberField
+import os
 
 class MyAccountManager(BaseUserManager):
 
@@ -32,7 +33,8 @@ class MyAccountManager(BaseUserManager):
 
 
 def get_profile_image_path(self, filename):
-    return f'profile_images/{self.pk}/profile_image.png'
+    file, ext = os.path.splitext(filename)
+    return f'profile_image-{self.email}{ext}'
 
 def get_default_profile_image():
     return 'profile_images/default/profile_avatar.jpg'
@@ -116,6 +118,8 @@ class Account(AbstractBaseUser):
     state               = models.CharField(max_length=30)
     city                = models.CharField(max_length=30)
     user_type           = models.CharField(choices=ACCOUNT_CHOICES, max_length=20)
+
+    notification_token  = models.CharField(max_length=500)
 
     objects = MyAccountManager()
     USERNAME_FIELD = 'email'

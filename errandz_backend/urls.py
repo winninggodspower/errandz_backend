@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/', include('user_auth.urls')),
     path('api/', include('delivery.urls')),
     path('api/', include('payment.urls')),
+    path('api/', include('notification.urls')),
     re_path(r'^playground/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
