@@ -115,14 +115,15 @@ class RiderRegisterSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context['request']
         user_type_model = request.user.user_type
-        account_data = validated_data.pop('account')
-        account = AccountSerializer(
-            request.user, data=account_data, partial=True, context={'request': request})
 
-        account.is_valid(raise_exception=True)
-        account = account.save()
+        if validated_data.get('account'):
+            account_data = validated_data.pop('account')
+            account = AccountSerializer(
+                request.user, data=account_data, partial=True, context={'request': request})
 
-        print(validated_data)
+            account.is_valid(raise_exception=True)
+            account = account.save()
+
         instance.first_name = validated_data['first_name']
         instance.last_name = validated_data['last_name']
 
@@ -149,12 +150,14 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context['request']
         user_type_model = request.user.user_type
-        account_data = validated_data.pop('account')
-        account = AccountSerializer(
-            request.user, data=account_data, partial=True, context={'request': request})
 
-        account.is_valid(raise_exception=True)
-        account = account.save()
+        if validated_data.get('account'):
+            account_data = validated_data.pop('account')
+            account = AccountSerializer(
+                request.user, data=account_data, partial=True, context={'request': request})
+
+            account.is_valid(raise_exception=True)
+            account = account.save()
 
         print(validated_data)
         instance.first_name = validated_data['first_name']
@@ -183,12 +186,14 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context['request']
         user_type_model = request.user.user_type
-        account_data = validated_data.pop('account')
-        account = AccountSerializer(
-            request.user, data=account_data, partial=True, context={'request': request})
 
-        account.is_valid(raise_exception=True)
-        account = account.save()
+        if validated_data.get('account'):
+            account_data = validated_data.pop('account')
+            account = AccountSerializer(
+                request.user, data=account_data, partial=True, context={'request': request})
+
+            account.is_valid(raise_exception=True)
+            account = account.save()
 
         print(validated_data)
         instance.company_name = validated_data['company_name']
