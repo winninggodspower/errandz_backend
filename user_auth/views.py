@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Rider, Customer, Vendor, Account
 from .serializers import RiderRegisterSerializer, CustomerRegisterSerializer, VendorRegisterSerializer, AccountSerializer
@@ -54,10 +54,9 @@ class AccountDetail(APIView):
     }
 
     def get(self, request):
-        data = {}
         account = request.user  # getting the account model
 
-        # get account type model serializer instance and passing in account model
+        # get the serialized data of the account type
         account_type_serializer = self.get_account_type_serialized_data(
             account, request)
 
@@ -66,11 +65,35 @@ class AccountDetail(APIView):
     def get_account_type_serialized_data(self, account, request):
         model = account.get_account_type_instance()
         serializer_class = self.get_account_type_serializer(account.user_type)
-        serializer = serializer_class(model, context={'request': request})
+
+        # returning user serialized information when method is get
+        if request.method == "GET":
+            serializer = serializer_class(model, context={'request': request})
+
+        # passing user inputed data to serializer when method is PATCH
+        elif request.method == "PATCH":
+            serializer = serializer_class(
+                model, data=request.data, partial=True, context={'request': request})
+
         return serializer
 
     def get_account_type_serializer(self, account_type):
         return self.ACCOUNT_TYPE_MODEL_SERIALIZER.get(account_type)
+
+    def patch(self, request):
+        account = request.user  # getting the user model
+
+        # get the account type serializer
+        account_type_serializer = self.get_account_type_serialized_data(
+            account, request)
+
+        # validating user input
+        account_type_serializer.is_valid(raise_exception=True)
+
+        # saving the data
+        account_type_serializer.save()
+
+        return Response(account_type_serializer.data, status=status.HTTP_200_OK)
 
 
 class AccountDetailId(AccountDetail):

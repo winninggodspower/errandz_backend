@@ -120,7 +120,8 @@ class Account(AbstractBaseUser):
 
     state = models.CharField(max_length=30)
     city = models.CharField(max_length=30)
-    user_type = models.CharField(choices=ACCOUNT_CHOICES, max_length=20)
+    user_type = models.CharField(
+        choices=ACCOUNT_CHOICES, max_length=20, editable=False)
 
     notification_token = models.CharField(
         max_length=500, blank=True, null=True)
