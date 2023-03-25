@@ -42,11 +42,9 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'phone': 'account with this phone already exist'})
 
-
         account.set_password(password)
         account.save()
         return account
-
 
 
 class RiderRegisterSerializer(serializers.ModelSerializer):
@@ -64,7 +62,6 @@ class RiderRegisterSerializer(serializers.ModelSerializer):
         account = account.save()
         rider = Rider.objects.create(**validated_data, account=account)
         return rider
-
 
 class CustomerRegisterSerializer(serializers.ModelSerializer):
     account = AccountRegistrationSerializer()

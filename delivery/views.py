@@ -19,7 +19,6 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsCustomer]
 
     def perform_create(self, serializer):
-        print("does this even run")
         data = serializer.save(customer=self.request.user.get_account_type_instance())
     
     def post(self, request, *args, **kwargs):
@@ -34,6 +33,7 @@ class DeliveryView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
         
         data = {**response.data, 'checkout_url': checkout_url}
         return Response(data, status=status.HTTP_201_CREATED)
+
 
     def get(self, request):
 

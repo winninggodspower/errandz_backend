@@ -8,10 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
+
 class RegisterRiderView(generics.CreateAPIView):
     query_set = Rider.objects.all()
     serializer_class = RiderRegisterSerializer
-    
 
     def post(self, request):
         serializer = RiderRegisterSerializer(data=request.data)
@@ -23,7 +23,6 @@ class RegisterRiderView(generics.CreateAPIView):
 class RegisterCustomerView(generics.CreateAPIView):
     query_set = Customer.objects.all()
     serializer_class = CustomerRegisterSerializer
-    
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -32,10 +31,9 @@ class RegisterCustomerView(generics.CreateAPIView):
         return Response(serializer.data, status=200)
 
 
-class RegisterVendorView(generics.CreateAPIView):
+class RegisterVendorView(generics.CreateAPIView, generics.UpdateAPIView):
     query_set = Vendor.objects.all()
     serializer_class = VendorRegisterSerializer
-    
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -57,9 +55,11 @@ class AccountDetail(APIView):
 
     def get(self, request):
         data = {}
-        account = request.user # getting the account model
+        account = request.user  # getting the account model
 
-        account_type_serializer = self.get_account_type_serialized_data(account, request) # get account type model serializer instance and passing in account model
+        # get account type model serializer instance and passing in account model
+        account_type_serializer = self.get_account_type_serialized_data(
+            account, request)
 
         return Response(account_type_serializer.data, status=200)
 
@@ -69,16 +69,19 @@ class AccountDetail(APIView):
         serializer = serializer_class(model, context={'request': request})
         return serializer
 
-    
     def get_account_type_serializer(self, account_type):
         return self.ACCOUNT_TYPE_MODEL_SERIALIZER.get(account_type)
 
+
 class AccountDetailId(AccountDetail):
-    
+
     def get(self, request, pk):
         data = {}
-        account = get_object_or_404(Account, pk=pk) # getting the account model
+        # getting the account model
+        account = get_object_or_404(Account, pk=pk)
 
-        account_type_serializer = self.get_account_type_serialized_data(account) # get account type model serializer instance and passing in account model
+        # get account type model serializer instance and passing in account model
+        account_type_serializer = self.get_account_type_serialized_data(
+            account)
 
         return Response(account_type_serializer.data, status=200)

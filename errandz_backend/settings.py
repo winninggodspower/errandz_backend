@@ -20,7 +20,8 @@ DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/', 'http://localhost:8000/', 'http://localhost:5173/', 'http://localhost:3000/']
+CSRF_TRUSTED_ORIGINS = ['https://*errandzbackend-production.up.railway.app/',
+                        'http://localhost:8000/', 'http://localhost:5173/', 'http://localhost:3000/']
 
 AUTH_USER_MODEL = 'user_auth.Account'
 
@@ -39,13 +40,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     "phonenumber_field",
+    "storages",
     'user_auth',
     'delivery',
     'payment',
     'notification',
 ]
 SITE_ID = 1
-  
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -64,12 +66,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-# allowed all for testing. this should be changed in production                                           
+# allowed all for testing. this should be changed in production
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'https://errandzbackend-production.up.railway.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://errandzbackend-production.up.railway.app',
 )
 
 ROOT_URLCONF = 'errandz_backend.urls'
@@ -159,9 +161,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-#in setting
+# in setting
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -176,10 +178,11 @@ PAYSTACK_PUBLIC_KEY = os.getenv('PAYSTACK_PUBLIC_KEY')
 PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY')
 
 
-#twillio settings
+# twillio settings
 ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
 AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
 TWILIO_PHONE_NUMBER = os.environ.get('TWILIO_PHONE_NUMBER')
+
 
 # email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -189,17 +192,16 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PW')
 
-# media storage setting 
-DEFAULT_FILE_STORAGE = 'storages.backends.ftp.FTPStorage'
-FTP_USER = 'epiz_33043501'
-FTP_PASSWORD = 'i6DkktsmpF8gRs'
-FTP_HOST = 'ftpupload.net'
-FTP_PORT = '21'
-FTP_STORAGE_LOCATION = f'ftp://{FTP_USER}:{FTP_PASSWORD}@{FTP_HOST}:{FTP_PORT}'
-
-
 # firebase notification setting
-VAPID_SECRETS = {
+FIREBASE_SETTINGS = {
     "PUBLIC_KEY":  "this is the vapid public key",
-    "PRIVATE_KEY": "this is the vapid private"
+    "REGISTRATION_TOKEN": "AAAAnT7KHNk:APA91bH5mMOXGyxH06QlxG7H5t5N9GRTHXuX5vBOdt5MLnpq1JbA-WrRM90662s9dCCjmJoKYvPN0HuHAjMGKH7bsPWBaW66nzWJbCL0Ki4BAQNhGPwmYpMRQqtZ5b5PToSVUuPY6dNJ",
+    "CERTIFICATE": os.path.join(BASE_DIR, "firebase-admin.json")
 }
+# azure settings
+DEFAULT_FILE_STORAGE = 'custom_storage.custom_azure.AzureMediaStorage'
+# STATICFILES_STORAGE = 'custom_storage.custom_azure.PublicAzureStorage'
+
+AZURE_ACCOUNT_NAME = 'errandzmedia'
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+AZURE_OVERWRITE_FILES = True

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from phonenumber_field.modelfields import PhoneNumberField
 import os
 
+
 class MyAccountManager(BaseUserManager):
 
     def create_user(self, email, phone, password=None):
@@ -33,30 +34,33 @@ class MyAccountManager(BaseUserManager):
 
 
 def get_profile_image_path(self, filename):
-    file, ext = os.path.splitext(filename)
-    return f'profile_image-{self.email}{ext}'
+    file, file_extention = os.path.splitext(filename)
+    email, email_extention = os.path.splitext(self.email)
+    return f'profile_image-{email}{file_extention}'
+
 
 def get_default_profile_image():
     return 'profile_images/default/profile_avatar.jpg'
+
 
 ACCOUNT_CHOICES = (
     ('rider', 'Rider'),
     ('vendor', 'Vendor'),
     ('customer', 'Customer'),
 )
-    
+
 
 class Rider(models.Model):
-    first_name          = models.CharField(max_length=30)
-    last_name           = models.CharField(max_length=30)
-    account             = models.OneToOneField('Account', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    account = models.OneToOneField('Account', on_delete=models.CASCADE)
 
     def get_total_earning(self):
         total_earning = 0
         for earning in self.riderpickupearning_set.all():
             total_earning += earning.amount
         return total_earning
-        
+
     def get_unpaid_balance(self):
         total_earning = self.get_total_earning()
         earning_withdrawn = self.get_amount_withdrawn()
@@ -72,54 +76,54 @@ class Rider(models.Model):
     def get_account_detail(self):
         return self.accountdetail
 
-
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
-    
+
 
 class Vendor(models.Model):
-    company_name        = models.CharField( max_length=50, unique=True)
-    company_address     = models.CharField( max_length=50, unique=True)
-    account             = models.OneToOneField('Account', on_delete=models.CASCADE)
+    company_name = models.CharField(max_length=50, unique=True)
+    company_address = models.CharField(max_length=50, unique=True)
+    account = models.OneToOneField('Account', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.company_name
 
-class Customer(models.Model):
-    first_name          = models.CharField(max_length=30)
-    last_name           = models.CharField(max_length=30)
-    account             = models.OneToOneField('Account', on_delete=models.CASCADE)
 
+class Customer(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    account = models.OneToOneField('Account', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
-    
 
 
 class Address(models.Model):
-    state               = models.CharField(max_length=30)
-    city                = models.CharField(max_length=30)
-
+    state = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
 
 
 # Create your models here.
 class Account(AbstractBaseUser):
-    email               = models.EmailField(verbose_name='email', max_length=60, unique=True)
-    phone               = PhoneNumberField(unique=True)
-    date_joined         = models.DateField(verbose_name='date joined', auto_now_add=True)
-    last_login          = models.DateField(verbose_name='last login', auto_now=True)
-    is_admin            = models.BooleanField(default=False)
-    is_active           = models.BooleanField(default=True)
-    is_staff            = models.BooleanField(default=False)
-    is_superuser        = models.BooleanField(default=False)
-    profile_image       = models.ImageField(max_length=255, upload_to=get_profile_image_path, null=True, blank=True, default=get_default_profile_image)
-    hide_email          = models.BooleanField(default=False)
+    email = models.EmailField(verbose_name='email', max_length=60, unique=True)
+    phone = PhoneNumberField(unique=True)
+    date_joined = models.DateField(
+        verbose_name='date joined', auto_now_add=True)
+    last_login = models.DateField(verbose_name='last login', auto_now=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    profile_image = models.ImageField(
+        max_length=255, upload_to=get_profile_image_path, null=True, blank=True, default=get_default_profile_image)
+    hide_email = models.BooleanField(default=False)
 
-    state               = models.CharField(max_length=30)
-    city                = models.CharField(max_length=30)
-    user_type           = models.CharField(choices=ACCOUNT_CHOICES, max_length=20)
+    state = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
+    user_type = models.CharField(choices=ACCOUNT_CHOICES, max_length=20)
 
-    notification_token  = models.CharField(max_length=500)
+    notification_token = models.CharField(
+        max_length=500, blank=True, null=True)
 
     objects = MyAccountManager()
     USERNAME_FIELD = 'email'
@@ -145,8 +149,8 @@ class Account(AbstractBaseUser):
 
     def get_account_type_instance(self):
         return get_object_or_404(self.ACCOUNT_TYPE_MODEL.get(self.user_type), account=self)
-        
+
 
 class Address(models.Model):
-    state               = models.CharField(max_length=30)
-    city                = models.CharField(max_length=30)
+    state = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
