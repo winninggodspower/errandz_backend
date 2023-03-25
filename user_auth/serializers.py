@@ -159,7 +159,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
             account.is_valid(raise_exception=True)
             account = account.save()
 
-        print(validated_data)
         instance.first_name = validated_data['first_name']
         instance.last_name = validated_data['last_name']
 

@@ -10,6 +10,7 @@ migrations/
 
 # Backup files # 
 *.bak 
+note.txt
 
 ### Django.Python Stack ###
 *.py[cod]
