@@ -58,13 +58,15 @@ class AccountSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
             'user_type': {'required': True},
+            # 'email': {'unique': True},
+            'profile_image': {'read_only': True}
         }
 
     def get_image_url(self, obj):
         return 'https://%s/%s' % (Site.objects.get_current().domain, obj.profile_image)
 
     def validate_email(self, value):
-        user = self.context['user']
+        user = self.context['request'].user
         if Account.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError(
                 {"email": "This email is already in use"})
@@ -87,11 +89,23 @@ class AccountSerializer(serializers.ModelSerializer):
             'state') if validated_data.get('state') else instance.state
         instance.city = validated_data.get(
             'city') if validated_data.get('city') else instance.city
-        instance.profile_image = validated_data.get(
-            'profile_image') if validated_data.get('profile_image') else instance.profile_image
 
         instance.save()
 
+        return instance
+
+
+class ProfileImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Account
+        fields = ['profile_image']
+
+    def update(self, instance, validated_data):
+        instance.profile_image = validated_data.get(
+            'profile_image', instance.profile_image)
+        print("request got this close. this is great")
+        instance.save()
         return instance
 
 
@@ -119,7 +133,7 @@ class RiderRegisterSerializer(serializers.ModelSerializer):
         if validated_data.get('account'):
             account_data = validated_data.pop('account')
             account = AccountSerializer(
-                request.user, data=account_data, partial=True, context={'request': request})
+                instance=request.user, data=account_data, partial=True, context={'request': request})
 
             account.is_valid(raise_exception=True)
             account = account.save()
@@ -154,7 +168,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
         if validated_data.get('account'):
             account_data = validated_data.pop('account')
             account = AccountSerializer(
-                request.user, data=account_data, partial=True, context={'request': request})
+                instance=request.user, data=account_data, partial=True, context={'request': request})
 
             account.is_valid(raise_exception=True)
             account = account.save()
@@ -189,7 +203,7 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
         if validated_data.get('account'):
             account_data = validated_data.pop('account')
             account = AccountSerializer(
-                request.user, data=account_data, partial=True, context={'request': request})
+                instance=request.user, data=account_data, partial=True, context={'request': request})
 
             account.is_valid(raise_exception=True)
             account = account.save()

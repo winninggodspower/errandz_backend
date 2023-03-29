@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Rider, Customer, Vendor, Account
-from .serializers import RiderRegisterSerializer, CustomerRegisterSerializer, VendorRegisterSerializer, AccountSerializer
+from .serializers import RiderRegisterSerializer, CustomerRegisterSerializer, VendorRegisterSerializer, AccountSerializer, ProfileImageSerializer
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
@@ -73,7 +74,7 @@ class AccountDetail(APIView):
         # passing user inputed data to serializer when method is PATCH
         elif request.method == "PATCH":
             serializer = serializer_class(
-                model, data=request.data, partial=True, context={'request': request})
+                instance=model, data=request.data, partial=True, context={'request': request})
 
         return serializer
 
@@ -108,3 +109,18 @@ class AccountDetailId(AccountDetail):
             account)
 
         return Response(account_type_serializer.data, status=200)
+
+
+class ChangeProfileImageApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
+    parser_classes = [FormParser, MultiPartParser]
+
+    def post(self, request, format=None):
+        user = request.user
+        serializer = ProfileImageSerializer(instance=user, data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response(serializer.data, status=200)

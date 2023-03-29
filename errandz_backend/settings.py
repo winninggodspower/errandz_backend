@@ -205,3 +205,6 @@ DEFAULT_FILE_STORAGE = 'custom_storage.custom_azure.AzureMediaStorage'
 AZURE_ACCOUNT_NAME = 'errandzmedia'
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 AZURE_OVERWRITE_FILES = True
+
+AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
