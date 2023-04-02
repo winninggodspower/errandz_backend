@@ -47,7 +47,6 @@ class AccountDetail(APIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [FormParser, MultiPartParser]
 
     ACCOUNT_TYPE_MODEL_SERIALIZER = {
         'rider': RiderRegisterSerializer,
