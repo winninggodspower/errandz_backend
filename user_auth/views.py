@@ -47,6 +47,7 @@ class AccountDetail(APIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [FormParser, MultiPartParser]
 
     ACCOUNT_TYPE_MODEL_SERIALIZER = {
         'rider': RiderRegisterSerializer,
@@ -111,12 +112,18 @@ class AccountDetailId(AccountDetail):
         return Response(account_type_serializer.data, status=200)
 
 
-class ChangeProfileImageApiView(APIView):
+class ChangeProfileImageApiView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, ]
     parser_classes = [FormParser, MultiPartParser]
+    serializer_class = ProfileImageSerializer
+    queryset = Account.objects.all()
 
-    def post(self, request, format=None):
+    def perform_create(self, serializer):
+        serializer.save(account=self.request.user)
+
+    def patch(self, request, format=None):
         user = request.user
+
         serializer = ProfileImageSerializer(instance=user, data=request.data)
 
         serializer.is_valid(raise_exception=True)

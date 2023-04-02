@@ -79,7 +79,7 @@ ROOT_URLCONF = 'errandz_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -208,3 +208,6 @@ AZURE_OVERWRITE_FILES = True
 
 AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
 AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+
+
+LOGIN_REDIRECT_URL = "/playground"

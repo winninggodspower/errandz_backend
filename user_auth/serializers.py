@@ -89,6 +89,8 @@ class AccountSerializer(serializers.ModelSerializer):
             'state') if validated_data.get('state') else instance.state
         instance.city = validated_data.get(
             'city') if validated_data.get('city') else instance.city
+        instance.profile_image = validated_data.get(
+            'profile_image') if validated_data.get('profile_image') else instance.profile_image
 
         instance.save()
 
@@ -100,13 +102,11 @@ class ProfileImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['profile_image']
-
-    def update(self, instance, validated_data):
-        instance.profile_image = validated_data.get(
-            'profile_image', instance.profile_image)
-        print("request got this close. this is great")
-        instance.save()
-        return instance
+        extra_kwargs = {
+            "profile_image": {
+                "required": True
+            }
+        }
 
 
 class RiderRegisterSerializer(serializers.ModelSerializer):
